@@ -123,7 +123,6 @@ const Problem = () => {
     return (
         <div className="problem" style={{marginLeft:"10px", marginRight:"10px",overflowY:"auto",maxHeight:"100vh",border: "none", height: "100%", backgroundColor: "#ffffff", border: "1px solid #e1e1e1", boxSizing: "border-box", boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)", borderRadius: "15px", display: "flex", flexDirection: "column", overflowY: "auto", padding: "10px"}}>
             <Typography variant="h3">{problem.problemName}</Typography>
-            <Typography variant="h6">Problem Image</Typography>
             <img src={problem?.image} style={{maxHeight:"100vh", maxHeight:"50vh", height:"100%", width:"100%", objectFit:"contain"}} ></img>
             <Typography variant="h6">Problem Statement</Typography>
             <Typography style={{whiteSpace: 'pre-line'}} variant="h7" display="block" paragraph={true}>{replaceTaskWithVar(problem?.statement,variables,currentUser?.userId)}</Typography>

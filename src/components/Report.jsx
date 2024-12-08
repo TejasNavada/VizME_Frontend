@@ -15,6 +15,7 @@ import { replaceTaskWithVar } from '../tool/Tools';
 import { getMessagesByProblemAndUser } from '../service/chatService';
 import { getUserEquationsBySubId } from '../service/submissionService';
 import { getUserById } from '../service/userService';
+import '../css/problem.scss'
 const nerdamer = require("nerdamer/all.min")
 var gen = require('random-seed');
 
@@ -110,11 +111,11 @@ const Report = () => {
                 }
                 if(submissions[i].pass==100){
                     dict[0].pass+=1
-                    dict[0].passIds.push(submissions[i].submissionId)
+                    dict[0].passIds.push(submissions[i].userId)
                 }
                 else{
                     dict[0].fail+=1
-                    dict[0].failIds.push(submissions[i].submissionId)
+                    dict[0].failIds.push(submissions[i].userId)
                 }
             }
             else{
@@ -123,11 +124,11 @@ const Report = () => {
                 }
                 if(submissions[i].pass==100){
                     dict[submissions[i].num_messages].pass+=1
-                    dict[submissions[i].num_messages].passIds.push(submissions[i].submissionId)
+                    dict[submissions[i].num_messages].passIds.push(submissions[i].userId)
                 }
                 else{
                     dict[submissions[i].num_messages].fail+=1
-                    dict[submissions[i].num_messages].failIds.push(submissions[i].submissionId)
+                    dict[submissions[i].num_messages].failIds.push(submissions[i].userId)
                 }
 
             }
@@ -149,11 +150,11 @@ const Report = () => {
             }
             if(submissions[i].pass==100){
                 subs[submissions[i].num_subs].pass+=1
-                subs[submissions[i].num_subs].passIds.push(submissions[i].submissionId)
+                subs[submissions[i].num_subs].passIds.push(submissions[i].userId)
             }
             else{
                 subs[submissions[i].num_subs].fail+=1
-                subs[submissions[i].num_subs].failIds.push(submissions[i].submissionId)
+                subs[submissions[i].num_subs].failIds.push(submissions[i].userId)
             }
         }
             
@@ -197,7 +198,7 @@ const Report = () => {
                 else{
                     selected = [...messageResults[filter.dataIndex]?.passIds , ...messageResults[filter.dataIndex]?.failIds]
                 }
-                let subs = submissions.filter((sub)=>selected.indexOf(sub.submissionId)!=-1)
+                let subs = submissions.filter((sub)=>selected.indexOf(sub.userId)!=-1)
                 console.log(subs)
                 setSelectedSubmissions(subs)
             }
@@ -212,7 +213,7 @@ const Report = () => {
                 else{
                     selected = [...submissionResults[filter.dataIndex]?.passIds , ...submissionResults[filter.dataIndex]?.failIds]
                 }
-                let subs = submissions.filter((sub)=>selected.indexOf(sub.submissionId)!=-1)
+                let subs = submissions.filter((sub)=>selected.indexOf(sub.userId)!=-1)
                 console.log(subs)
                 setSelectedSubmissions(subs)
             }
@@ -252,7 +253,7 @@ const Report = () => {
                 setFilter({type:"message",dataIndex:d.dataIndex,part:1, format:"Failed and " + messageResults[d.dataIndex].numMessages + " messages sent"})
                 selected = [...messageResults[d.dataIndex].failIds]
             }
-            let subs = submissions.filter((sub)=>selected.indexOf(sub.submissionId)!=-1)
+            let subs = submissions.filter((sub)=>selected.indexOf(sub.userId)!=-1)
             console.log(subs)
             setSelectedSubmissions(subs)
         }
@@ -261,7 +262,7 @@ const Report = () => {
             setFilter({type:"message",dataIndex:d.dataIndex,part:2,format:messageResults[d.dataIndex].numMessages + " messages sent"})
             let selected = [...messageResults[d.dataIndex].passIds , ...messageResults[d.dataIndex].failIds]
             console.log(selected)
-            let subs = submissions.filter((sub)=>selected.indexOf(sub.submissionId)!=-1)
+            let subs = submissions.filter((sub)=>selected.indexOf(sub.userId)!=-1)
             console.log(subs)
             setSelectedSubmissions(subs)
         }
@@ -282,7 +283,7 @@ const Report = () => {
                 setFilter({type:"submission",dataIndex:d.dataIndex,part:1,format:"Failed and " + submissionResults[d.dataIndex].num_subs + " submissions"})
                 selected = [...submissionResults[d.dataIndex].failIds]
             }
-            let subs = submissions.filter((sub)=>selected.indexOf(sub.submissionId)!=-1)
+            let subs = submissions.filter((sub)=>selected.indexOf(sub.userId)!=-1)
             console.log(subs)
             setSelectedSubmissions(subs)
         }
@@ -291,7 +292,7 @@ const Report = () => {
             setFilter({type:"submission",dataIndex:d.dataIndex,part:2,format:submissionResults[d.dataIndex].num_subs + " submissions"})
             let selected = [...submissionResults[d.dataIndex].passIds , ...submissionResults[d.dataIndex].failIds]
             console.log(selected)
-            let subs = submissions.filter((sub)=>selected.indexOf(sub.submissionId)!=-1)
+            let subs = submissions.filter((sub)=>selected.indexOf(sub.userId)!=-1)
             console.log(subs)
             setSelectedSubmissions(subs)
         }
@@ -324,6 +325,7 @@ const Report = () => {
             setCorrectSolution(computedAnswer)
             let sub = submissions.find((submission)=>submission.userId==listenTo)
             getUserEquationsBySubId(sub.submissionId).then((studentEquations)=>{
+                if(studentEquations?.length>0)
                 setStudentSolution(studentEquations[0].equation.substring(9))
             })
             
@@ -344,7 +346,6 @@ const Report = () => {
             <div>
                 <div style={{border: "none", height: "100%", backgroundColor: "#ffffff", border: "1px solid #e1e1e1", boxSizing: "border-box", boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)", borderRadius: "15px", display: "flex", flexDirection: "column", overflowY: "auto", padding: "10px"}}>
                     <Typography variant="h3"component="span" onClick={()=>{setSelectedSubmissions(submissions);setFilter({type:"none",format:"All"})}}>{problem.problemName}</Typography>
-                    <Typography variant="h6">Problem Image</Typography>
                     <img src={problem?.image} style={{maxHeight:"100vh", maxHeight:"50vh", height:"100%", width:"100%", objectFit:"contain"}} ></img>
                     <Typography variant="h6">Problem Statement</Typography>
                     <Typography style={{whiteSpace: 'pre-line'}} variant="h7" display="block" paragraph={true}>{replaceTaskWithVar(problem?.statement,variables,listenTo)}</Typography>
