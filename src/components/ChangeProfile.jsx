@@ -47,11 +47,6 @@ const ChangeProfile = ({ open, setOpen }) => {
 
     const handleCloseDialog = () => {
         setOpen(false)
-        setNewUser({
-            first_name: "",
-            last_name: "",
-            email: '',
-        })
     }
     const handleSignOut = async () => {
         try {

@@ -17,7 +17,7 @@ const Join = () => {
   const [err, setErr] = useState(false)
   const {currentUser, setCurrentUser } = useContext(AuthContext)
   const [mode, setMode] = useState(0)
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(true)
 
   
 
@@ -215,7 +215,7 @@ const Join = () => {
               <Button 
               onClick={()=>setMode(1)}
               >Create Account</Button>
-              <p style={{textAlign:"left", marginBottom: "17px"}}>Your account will not be connected to Canvas. Your exercises are not graded and attendance is not recorded. Having an account allows you to revisit your data (e.g., previous codes) at any time. Your account information is encrypted and stored on a school server. </p>
+              
 
             </div>
             <Button 

@@ -42,7 +42,7 @@ const Report = () => {
     const [value, setValue] = useState(0);
     const [correctSolution, setCorrectSolution] = useState("");
     const [studentSolution, setStudentSolution] = useState("");
-    const [filter, setFilter] = useState({type:"none"})
+    const [filter, setFilter] = useState({type:"none",format:"All"})
     const [ user, setUser ] = useState(null);
     const [ avgSubs, setAvgSubs ] = useState(0);
     const [ avgMessages, setAvgMessages ] = useState(0);
@@ -226,10 +226,9 @@ const Report = () => {
         if(submissions==null){
             return
         }
-        setFilter({type:"pf",dataIndex:d.dataIndex})
+        setFilter({type:"pf",dataIndex:d.dataIndex,format:d.dataIndex?"Failed":"Passed"})
         console.log(event)
         console.log(d)
-        let pass = d.dataIndex==0
         let selected = []
         submissions.forEach(element => {
             if((element.pass==100 && d.dataIndex==0) || (element.pass!=100 && d.dataIndex!=0)){
@@ -246,11 +245,11 @@ const Report = () => {
         if(d?.type=="bar"){
             let selected
             if(d.seriesId == "pass"){
-                setFilter({type:"message",dataIndex:d.dataIndex,part:0})
+                setFilter({type:"message",dataIndex:d.dataIndex,part:0,format:"Passed and " + messageResults[d.dataIndex].numMessages + " messages sent"})
                 selected = [...messageResults[d.dataIndex].passIds]
             }
             else{
-                setFilter({type:"message",dataIndex:d.dataIndex,part:1})
+                setFilter({type:"message",dataIndex:d.dataIndex,part:1, format:"Failed and " + messageResults[d.dataIndex].numMessages + " messages sent"})
                 selected = [...messageResults[d.dataIndex].failIds]
             }
             let subs = submissions.filter((sub)=>selected.indexOf(sub.submissionId)!=-1)
@@ -259,7 +258,7 @@ const Report = () => {
         }
         else{
             console.log(messageResults[d.dataIndex])
-            setFilter({type:"message",dataIndex:d.dataIndex,part:2})
+            setFilter({type:"message",dataIndex:d.dataIndex,part:2,format:messageResults[d.dataIndex].numMessages + " messages sent"})
             let selected = [...messageResults[d.dataIndex].passIds , ...messageResults[d.dataIndex].failIds]
             console.log(selected)
             let subs = submissions.filter((sub)=>selected.indexOf(sub.submissionId)!=-1)
@@ -276,11 +275,11 @@ const Report = () => {
         if(d?.type=="bar"){
             let selected
             if(d.seriesId == "pass"){
-                setFilter({type:"submission",dataIndex:d.dataIndex,part:0})
+                setFilter({type:"submission",dataIndex:d.dataIndex,part:0,format:"Passed and " + submissionResults[d.dataIndex].num_subs + " submissions"})
                 selected = [...submissionResults[d.dataIndex].passIds]
             }
             else{
-                setFilter({type:"submission",dataIndex:d.dataIndex,part:1})
+                setFilter({type:"submission",dataIndex:d.dataIndex,part:1,format:"Failed and " + submissionResults[d.dataIndex].num_subs + " submissions"})
                 selected = [...submissionResults[d.dataIndex].failIds]
             }
             let subs = submissions.filter((sub)=>selected.indexOf(sub.submissionId)!=-1)
@@ -289,7 +288,7 @@ const Report = () => {
         }
         else{
             console.log(submissionResults[d.dataIndex])
-            setFilter({type:"submission",dataIndex:d.dataIndex,part:2})
+            setFilter({type:"submission",dataIndex:d.dataIndex,part:2,format:submissionResults[d.dataIndex].num_subs + " submissions"})
             let selected = [...submissionResults[d.dataIndex].passIds , ...submissionResults[d.dataIndex].failIds]
             console.log(selected)
             let subs = submissions.filter((sub)=>selected.indexOf(sub.submissionId)!=-1)
@@ -335,7 +334,7 @@ const Report = () => {
 
     },[listenTo, problem, variables])
     useEffect(()=>{
-        setFilter({type:"none"})
+        setFilter({type:"none",format:"All"})
 
     },[problem?.problemId])
 
@@ -344,9 +343,9 @@ const Report = () => {
         <div className="problem" style={{  marginLeft:"10px", marginRight:"10px",overflowY:"auto",maxHeight:"100vh"}}>
             <div>
                 <div style={{border: "none", height: "100%", backgroundColor: "#ffffff", border: "1px solid #e1e1e1", boxSizing: "border-box", boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)", borderRadius: "15px", display: "flex", flexDirection: "column", overflowY: "auto", padding: "10px"}}>
-                    <Typography variant="h3"component="span" onClick={()=>{setSelectedSubmissions(submissions);setFilter({type:"none"})}}>{problem.problemName}</Typography>
+                    <Typography variant="h3"component="span" onClick={()=>{setSelectedSubmissions(submissions);setFilter({type:"none",format:"All"})}}>{problem.problemName}</Typography>
                     <Typography variant="h6">Problem Image</Typography>
-                    <img src={problem?.image} style={{maxHeight:"100%",maxWidth:"100%"}} ></img>
+                    <img src={problem?.image} style={{maxHeight:"100vh", maxHeight:"50vh", height:"100%", width:"100%", objectFit:"contain"}} ></img>
                     <Typography variant="h6">Problem Statement</Typography>
                     <Typography style={{whiteSpace: 'pre-line'}} variant="h7" display="block" paragraph={true}>{replaceTaskWithVar(problem?.statement,variables,listenTo)}</Typography>
                     {listenTo!=null && (
@@ -411,7 +410,7 @@ const Report = () => {
                     </div>
                     <div style={{display: "flex",border: "none", height: "100%", backgroundColor: "#ffffff", border: "1px solid #e1e1e1", boxSizing: "border-box", boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)", borderRadius: "15px", display: "flex",  overflowY: "auto", padding: "10px"}}>
                         <List>
-                            <ListItemText>Selected Submissions</ListItemText>
+                            <ListItemText>Selected Submissions: {filter.format}</ListItemText>
                             {selectedSubmissions.map((sub)=>(
                                 <ListItem disablePadding sx={{maxWidth:"16em"}}>
                                     <ListItemButton divider disableGutters>

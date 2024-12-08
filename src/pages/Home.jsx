@@ -86,7 +86,7 @@ const Home = React.memo(() => {
     <div >
         {problem!=null?(
             <div  style={{display:"flex"}}>
-              <div style={{overflowY:"auto", maxHeight:"100vh",display:"flex",flexDirection:"column",scrollbarWidth:"none", flex:1,backgroundColor:"ButtonShadow",borderRightWidth:"1px",borderColor:"ButtonHighlight", borderStyle:"none solid none none",paddingLeft: "20px", paddingRight: "20px"  }}>
+              <div style={{overflowY:"auto", height:"100vh",display:"flex",flexDirection:"column",scrollbarWidth:"none", flex:1,backgroundColor:"ButtonShadow",borderRightWidth:"1px",borderColor:"ButtonHighlight", borderStyle:"none solid none none",paddingLeft: "20px", paddingRight: "20px"  }}>
                 <div >
                   <Typography onClick={()=>{
                     if(currentUser.userRole<3){
