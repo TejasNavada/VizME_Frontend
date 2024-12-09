@@ -31,7 +31,7 @@ const Messages = ({ messagesProp }) => {
           />
         )
       })}
-      {messages.length>0&&messages[messages.length-1].sender_id==currentUser.userId && currentUser.urserRole == 3(
+      {messages.length>0&&messages[messages.length-1].sender_id==currentUser.userId && currentUser.urserRole == 3 &&(
         <Message
         key={0}
         message={{"role":"assistant","content":"Loading..."}}
