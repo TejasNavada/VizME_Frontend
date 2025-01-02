@@ -3,6 +3,12 @@
 # dependencies
 /node_modules
 /.npm
+/cert.pem
+/key.pem
+/frontend.key
+/localhost.key
+/frontend.crt
+/localhost.crt
 /.env
 /.pnp
 .pnp.js
