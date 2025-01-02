@@ -12,7 +12,7 @@ const Message = ({message}) => {
     const messageClass = 'message'
 
     useEffect(()=>{
-        if(message.sender_id!=currentUser && message.sender_id!=1){
+        if(message.sender_id!=currentUser.userId && message.sender_id!=1){
             getUserById(message.sender_id).then((data)=>{
                 //console.log(data)
                 setUser(data)

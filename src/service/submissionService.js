@@ -9,7 +9,7 @@ export const getSubmissionById = async (submissionId) => {
   try {
     let response = await axios.get(submissionUrl + "/" + submissionId)
     console.log(response.data.submission)
-    return response.data.submission
+    return response.data
     
   } catch (error) {
     console.error(error)
@@ -24,7 +24,7 @@ export const getUserSubmissions = async (problemId,userId) => {
 
   let submissions = []
   await axios.get(submissionUrl + '/' + problemId + '/'+userId).then(response => {
-    submissions = response.data.submissions
+    submissions = response.data
   }).catch(error => {
     console.error(error)
     return []
@@ -36,7 +36,7 @@ export const getUserEquationsBySubId = async (submissionId) => {
 
   let submissions = []
   await axios.get(submissionUrl + '/equation/' + submissionId).then(response => {
-    submissions = response.data.submissions
+    submissions = response.data
   }).catch(error => {
     console.error(error)
     return []
@@ -50,7 +50,7 @@ export const getSessionSubmissions = async (problemId) => {
 
   let submissions = []
   await axios.get(submissionUrl + '/problem/' + problemId).then(response => {
-    submissions = response.data.submissions
+    submissions = response.data
   }).catch(error => {
     console.error(error)
     return []
@@ -60,9 +60,7 @@ export const getSessionSubmissions = async (problemId) => {
 
 export const updateSubmission = async (submission) => {
   //console.log(submission)
-  axios.post(submissionUrl, {
-    submission: submission
-  }).then(response => {
+  axios.post(submissionUrl, submission).then(response => {
     return response.data
   }).catch(error => {
     console.error(error)
@@ -76,13 +74,15 @@ export const createSubmission = async (problemId, userId, pass, error, equations
         userId:userId,
         pass:pass,
     }
-
-    let submission = await axios.post(submissionUrl, {
+    console.log({
+      submission: sub,
+      equations:equations
+  })
+    let submission = await axios.post(submissionUrl + "/", {
         submission: sub,
-        error:error,
         equations:equations
     })
-    return submission.data.submission
+    return submission.data
 }
 
 export const createErr = (error) => {
@@ -103,7 +103,7 @@ export const getSubmissionsByProblemId = async (problemId) => {
     let submissions = []
     let response = await axios.get(problemUrl + '/' + problemId + '/submissions')
     console.log(response)
-    submissions = response.data.submissions
+    submissions = response.data
     return submissions
     
   } catch (error) {
@@ -124,15 +124,15 @@ export const subscribeSubmissions = (problemId, updateSubmissions) => {
   const updateSubmissionHandler = (submission) => {
     console.log(submission)
     updateSubmissions((prevSubmissions) => {
-      const submissionIndex = prevSubmissions.findIndex(s => s.userId === submission.userId)
+      const submissionIndex = prevSubmissions.findIndex(s => s.userId === submission[0].userId)
       if (submissionIndex === -1) {
         if(prevSubmissions==null){
-          return [submission]
+          return [submission[0]]
         }
-        return [...prevSubmissions, submission]
+        return [...prevSubmissions, submission[0]]
       } else {
         let newSubmissions = [...prevSubmissions]
-        newSubmissions[submissionIndex] = submission
+        newSubmissions[submissionIndex] = submission[0]
         //console.log(newSubmissions)
         return newSubmissions
       }

@@ -12,7 +12,8 @@ export const getAllProblems = async () => {
 	await axios
 		.get(problemUrl + "/")
 		.then((response) => {
-			problems = response.data.problems
+			console.log(response)
+			problems = response.data
 		})
 		.catch((error) => {
 			throw error
@@ -26,7 +27,7 @@ export const getProblemById = async (id) => {
 	await axios
 		.get(problemUrl + "/" + id)
 		.then((response) => {
-			problem = response.data.problem
+			problem = response.data
 		})
 		.catch((error) => {
 			throw error
@@ -40,7 +41,8 @@ export const getVariablesByProblemId = async (id) => {
 	await axios
 		.get(problemUrl + "/variables/" + id)
 		.then((response) => {
-			problem = response.data.variables
+			console.log(response)
+			problem = response.data
 		})
 		.catch((error) => {
 			throw error
@@ -54,9 +56,7 @@ export const updateProblemInSession = async (problemId, problem) => {
 	}
 	try {
 		return await axios
-			.put(problemUrl + "/" + problemId, {
-				problem: problem,
-			})
+			.put(problemUrl + "/" + problemId, problem)
 	}
 	catch (error) {
 		console.error(error)
@@ -70,14 +70,12 @@ export const addProblem = async (newProblem) => {
 	newProblem.problemType = "scalar"
     newProblem.enable_chat=true
 
-
+	console.log(newProblem)
 	let problem = null
 	await axios
-		.post(problemUrl, {
-			problem: newProblem,
-		})
+		.post(problemUrl + "/", newProblem)
 		.then((response) => {
-			problem = response.data.problem
+			problem = response.data
 		})
 		.catch((error) => {
 			console.error(error)
@@ -101,9 +99,7 @@ export const getSessionsByIds = async (sessionIds) => {
 	if (!sessionIds) return []
 	let sessions = []
 	await axios
-		.post(problemUrl + "/ids", {
-			ids: sessionIds,
-		})
+		.post(problemUrl + "/ids", sessionIds)
 		.then((response) => {
 			sessions = response.data
 		})
@@ -118,12 +114,10 @@ export const setProblemEnableChat = async (problemId, enableChat) => {
 	if (!problemId || enableChat === undefined) return false
 	axios
 		.put(problemUrl + "/" + problemId, {
-			problem: {
 				enable_chat: enableChat,
-			},
-		})
+			})
 		.then((response) => {
-			return response.data.problem[1][0].enable_chat
+			return response.data[1][0].enable_chat
 		})
 		.catch((error) => {
 			console.error(error)
@@ -134,8 +128,10 @@ export const setProblemEnableChat = async (problemId, enableChat) => {
 export const subscribeProblem = (problemId, updateProblem) => {
 	//getProblemById(problemId).then((problem)=>updateProblem(problem))
 	console.log("subscribing to problem",problemId)
-	socket.emit("subscribe problem", problemId)
-
+	socket.emit("subscribe problem", problemId, (response)=>{
+		console.log(response)
+	})
+	console.log(socket)
 	socket.on("update problem", (res) => {
 		console.log(res)
 		updateProblem(res.data)

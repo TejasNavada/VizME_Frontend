@@ -13,10 +13,17 @@ export const sendMessage = async (problemId, sender_id, receiver_id, content) =>
 		receiver_id: receiver_id,
 		content: content,
 	}
-	console.log("message sent",messageData)
+	
     try {
-        let response = await axios.post(messageUrl, messageData)
-        return response.data.message
+        let response = await axios.post(messageUrl +"/", {
+            problemId: problemId,
+            sender_id: sender_id,
+            receiver_id: receiver_id,
+            content: content,
+            created_time: Date.now()
+        })
+        console.log(response)
+        return response.data
     } catch (error) {
         console.log(error)
     }
@@ -26,59 +33,34 @@ export const sendMessage = async (problemId, sender_id, receiver_id, content) =>
 export const getMessagesByProblem = async (problemId) => {
 	try {
 		const response = await axios.get(messageUrl + "/problem/" + problemId)
-		return response.data.messages
+		return response.data
 	} catch (error) {
 		//console.log(error)
 	}
 }
 export const getMessagesByProblemAndUser = async (problemId,userId) => {
+    console.log(problemId +", "+ userId)
 	try {
 		const response = await axios.get(messageUrl + "/problem/" + problemId+"/user/"+userId)
-		return response.data.messages
+        console.log(response)
+		return response.data
 	} catch (error) {
-		//console.log(error)
+		console.log(error)
 	}
 }
 
 
 
-export const sendMessageToAI = async (messages, newMessage,imageURL,task,problemId,userId) => {
-    if(messages.length<2 || messages[0].content!="You will help a student in their Mechanical Engineering task: "+task){
-        messages = [
-            {
-                "role":"system",
-                "content": "You will help a student in their Mechanical Engineering task: "+task,
-            },
-            {
-                "role": "user", 
-                "content": [
-                    {"type": "text", "text": newMessage},
-                    {
-                      "type": "image_url",
-                      "image_url": {
-                        "url": imageURL,
-                        "detail": "low"
-                      },
-                    },
-                  ],
-                "sender_id": userId,
-                "receiver_id": 1,
-                "problemId": problemId,
-            }
-        ];
-    }
+export const sendMessageToAI = async (messages) => {
+    
     try {
 
-        let response = await axios.post(process.env.REACT_APP_HOST_API + "/chat"+"/ai", {
-            messages:messages
-        })
+        let response = await axios.post(process.env.REACT_APP_HOST_API + "/chat"+"/ai", messages)
 
         
         
-        console.log(response);
-        let toReturn = [...messages,response.data.message]
-        await sendMessage(problemId,1,userId,response.data.message.content)
-        return toReturn
+        
+        return response.data
     } catch (error) {
         console.error("Error in AI processing:", error);
     }
@@ -88,14 +70,37 @@ export const subscribeMessageByProblemAndUser = (problemId, userId, updateMessag
 	console.log("subscribing to messages",problemId,userId)
     getMessagesByProblemAndUser(problemId,userId).then((messages)=>{
         console.log(messages)
-        updateMessages(messages)
+        if(messages.length>0){
+            updateMessages(messages)
+        }
     })
-	socket.emit("subscribe message", problemId, userId)
-
+	let result = socket.emit("subscribe message",{ problemId: problemId, userId: userId })
+    console.log(result)
 	socket.on("update message", (res) => {
 		console.log(res)
+		
         updateMessages((prevMessages)=>{
-            return [...prevMessages,res.data]
+			if(res.operation == 'UPDATE'){
+				let messageIndex = prevMessages?.findIndex(g => g.messageId === res.data.messageId)
+				if (messageIndex !== -1) {
+					let newMessages = [...prevMessages]
+					newMessages[messageIndex] = res.data
+					return newMessages
+				} 
+			}
+			else if (res.operation === 'DELETE') {
+				let messageIndex = prevMessages?.findIndex(g => g.messageId === res.data.messageId)
+				if (messageIndex !== -1) {
+					let newMessages = [...prevMessages]
+					newMessages.splice(messageIndex, 1)
+					return newMessages
+				} 
+				
+			}
+			else if (res.operation == 'INSERT'){
+				return [...prevMessages,res.data]
+			}
+            
 		})
 	})
 
@@ -106,6 +111,6 @@ export const subscribeMessageByProblemAndUser = (problemId, userId, updateMessag
 
 	return () => {
 		socket.off("update message")
-		socket.emit("unsubscribe message", problemId, userId)
+		socket.emit("unsubscribe message",{ problemId: problemId, userId: userId })
 	}
 }

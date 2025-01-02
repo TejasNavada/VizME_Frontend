@@ -55,24 +55,10 @@ const Problem = () => {
 
     const handleSubmit = () => {
         const getFeedback = async () => {
-            let newMessages = [...messages]
-            newMessages.push(
-                {"role": "user", "content": "I got "+answer+". But this is incorrect. Can you explain how to solve a problem like this?", sender_id: currentUser.id, problemId:problem.problemId, receiver_id:1}
-              )
             if(problem?.enable_chat){
-                await sendMessage(problem.problemId,currentUser.userId,1,"I got "+answer+". But this is incorrect. Can you explain how to solve a problem like this?")
+                let newMessages = [...messages,{problemId:problem.problemId,sender_id:currentUser.userId,receiver_id:1,content:filterProfanity("I got "+answer+". But this is incorrect. Can you explain how to solve a problem like this?")}]
+                await sendMessageToAI(newMessages)
             }
-            if(problem?.enable_chat){
-                let sentMessage = await sendMessageToAI(
-                    newMessages,
-                    filterProfanity("I got "+answer+". But this is incorrect. Can you explain how to solve a problem like this?"),
-                    problem.image,
-                    problem.statement,
-                    problem.problemId,
-                    currentUser.userId
-                )
-            }
-            
         }
         
         let equations = ["Solution="+problem?.answer]

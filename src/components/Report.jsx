@@ -63,6 +63,9 @@ const Report = () => {
         //console.log(message)
     },[listenTo])
     useEffect(()=>{
+        setAvgSubs(0)
+        setAvgMessages(0)
+        setPassrate(0)
         if(!stats || stats.length==0){
             return;
         }

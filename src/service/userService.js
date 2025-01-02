@@ -7,15 +7,13 @@ export const registerStudent = async (user) => {
     return false
   }
   try {
-    let res = await axios.post(process.env.REACT_APP_HOST_API + '/register', {
-      user: user,
-    })
+    let res = await axios.post(process.env.REACT_APP_HOST_API + '/register', user)
     console.log(res)
     return res.data
   }
   catch (err) {
-    //console.log(err)
-    return err
+    console.log(err)
+    return null
   }
 }
 
@@ -29,21 +27,19 @@ export const getUserById = async (id) => {
 		return res
 	} catch (error) {
 		console.error(error)
-		throw error
+		throw null
 	}
 }
 
 export const getUserByEmail = async (email) => {
 	if (!email) return null
 
-	let res = null
 	try {
-		const response = await axios.post(userUrl + "/email",{ email })
-		res = response.data
-		return res
+		const response = await axios.get(userUrl + "/email/"+email)
+		return response
 	} catch (error) {
 		console.error(error)
-		throw error
+		return null
 	}
 }
 
@@ -51,7 +47,7 @@ export const updateUser = async (userId, user) => {
 	if (!user) return null
 	let res = false
 	await axios
-		.put(userUrl + "/" + userId, { user })
+		.put(userUrl + "/" + userId, user )
 		.then((response) => {
 			res = true
 		})

@@ -45,9 +45,12 @@ const Session = () => {
       const fetchData = async () => {
         
           let sessions = await getAllProblems()
-          console.log(sessions.sort((a,b)=>a.problemId<b.problemId))
-          console.log(sessions)
-          setProblems(sessions)
+          if(sessions.length>0){
+            console.log(sessions.sort((a,b)=>a.problemId<b.problemId))
+            console.log(sessions)
+            setProblems(sessions)
+          }
+          
       }
   
       fetchData()

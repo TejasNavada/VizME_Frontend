@@ -2,12 +2,14 @@ import Home from "./pages/Home"
 import Join from "./pages/Join"
 import Session from "./components/Session"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { ProblemProvider } from './context/ProblemContext'
-
+import { socket } from "./tool/socketIO"
 import { MessageProvider } from './context/MessageContext'
 
 function App () {
+
+
 
   return (
     <BrowserRouter>

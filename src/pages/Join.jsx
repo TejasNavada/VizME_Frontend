@@ -11,17 +11,32 @@ import { getUserByEmail } from "../service/userService"
 import { signInWithEmailAndPassword, validateToken } from '../service/authService'
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { ProblemContext } from '../context/ProblemContext'
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Join = () => {
   const { id } = useParams()
   const [err, setErr] = useState(false)
   const {currentUser, setCurrentUser } = useContext(AuthContext)
+  const { loading } = useContext(ProblemContext)
   const [mode, setMode] = useState(0)
   const [visible, setVisible] = useState(true)
 
   
 
-  
+  useEffect(()=>{
+    validateToken("").then((user)=>{
+      console.log(user)
+      if (user) {
+        setCurrentUser(user)
+        if(id==null){
+          //window.location.href = '/'
+        }
+        //window.location.href = '/problem/' + id
+      }
+    })
+      
+  },[])
 
   
 
@@ -36,11 +51,9 @@ const Join = () => {
       let user = await validateToken(token)
       console.log(user)
       if (user) {
-        console.log(id)
-        Cookies.set('VizME_userId', user.userId)
         setCurrentUser(user)
         if(id==null){
-          window.location.href = '/'
+          //window.location.href = '/'
         }
         //window.location.href = '/problem/' + id
       }
@@ -90,11 +103,17 @@ const Join = () => {
           const newUser = await registerStudent(user)
           console.log(newUser)
           if (newUser != null && newUser != "Account with this email already exists") {
-            Cookies.set('VizME_userId', newUser.userId)
+            let token = await signInWithEmailAndPassword(email, password)
+            console.log(token)
+            let user = await validateToken(token)
             //setCurrentUser(newUser)
             console.log(id)
-            if(id==null){
-              window.location.href = '/'
+            if (user) {
+              setCurrentUser(user)
+              if(id==null){
+                //window.location.href = '/'
+              }
+              //window.location.href = '/problem/' + id
             }
             //window.location.href = '/problem/' + id
           } else {
@@ -204,7 +223,7 @@ const Join = () => {
     
   }
 
-  return currentUser ? <Home /> : (
+  return currentUser&&!loading? <Home /> : (
     <div>
       { mode === 0 && (
         <div className="formContainer">

@@ -18,12 +18,10 @@ import Report from "../components/Report"
 const Home = React.memo(() => {
     const { currentUser, setCurrentUser } = useContext(AuthContext)
     const [open, setOpen] = useState(false)
-    const { problem, setProblem, problems, setProblems, mode, setMode  } = useContext(ProblemContext)
+    const { problem, setProblem, problems, setProblems, mode, setMode } = useContext(ProblemContext)
     const navigate = useNavigate()
 
-    useEffect(() => {
-        setProblem(problems[problems.length-1])
-    }, [])
+    
   
     useEffect(() => {
       console.log(currentUser)
@@ -82,94 +80,94 @@ const Home = React.memo(() => {
 
 
   return (
-    
-    <div >
-        {problem!=null?(
-            <div  style={{display:"flex"}}>
-              <div style={{overflowY:"auto", height:"100vh",display:"flex",flexDirection:"column",scrollbarWidth:"none", flex:1,backgroundColor:"ButtonShadow",borderRightWidth:"1px",borderColor:"ButtonHighlight", borderStyle:"none solid none none",paddingLeft: "20px", paddingRight: "20px"  }}>
-                <div >
-                  <Typography onClick={()=>{
-                    if(currentUser.userRole<3){
-                      setProblem(null)
-                    }
-                  }} sx={{marginBottom:"20px"}} variant='h6'>Problem Exercises</Typography>
-                  <ButtonGroup fullWidth variant="text" orientation="vertical" aria-label="Vertical button group">
-                      {problems.toReversed().map((value)=>(
-                        <Button color="inherit" onClick={() => setProblem(value)}>
-                            <Typography sx={{color:value.problemId==problem.problemId?"blue":"black"}} >{value?.problemName}</Typography>
-                        </Button>
-                      ))}
-                  </ButtonGroup>
-                </div>
-                <div style={{marginTop:"auto"}}>
+        <div>
+          {problem!=null?(
+              <div  style={{display:"flex"}}>
+                <div style={{overflowY:"auto", height:"100vh",display:"flex",flexDirection:"column",scrollbarWidth:"none", flex:1,backgroundColor:"ButtonShadow",borderRightWidth:"1px",borderColor:"ButtonHighlight", borderStyle:"none solid none none",paddingLeft: "20px", paddingRight: "20px"  }}>
                   <div >
-                    {currentUser.userRole<3 &&(
-                      <Tooltip sx={{display:"flex"}} title="Enable Chat">
-                        <div style={{display:"flex"}}>
-                          <Typography sx={{marginY:"auto"}}>Enable Chat</Typography>
-                          <Switch
-                          sx={{marginY:"auto"}}
-                          checked={problem.enable_chat}
-                          onChange={() => setProblemEnableChat(problem.problemId,!problem.enable_chat)}
-                          name="loading"
-                          color="primary"
-                          />
-                        </div>
+                    <Typography onClick={()=>{
+                      if(currentUser.userRole<3){
+                        setProblem(null)
+                      }
+                    }} sx={{marginBottom:"20px"}} variant='h6'>Problem Exercises</Typography>
+                    <ButtonGroup fullWidth variant="text" orientation="vertical" aria-label="Vertical button group">
+                        {problems.toReversed().map((value)=>(
+                          <Button color="inherit" onClick={() => setProblem(value)}>
+                              <Typography sx={{color:value.problemId==problem.problemId?"blue":"black"}} >{value?.problemName}</Typography>
+                          </Button>
+                        ))}
+                    </ButtonGroup>
+                  </div>
+                  <div style={{marginTop:"auto"}}>
+                    <div >
+                      {currentUser.userRole<3 &&(
+                        <Tooltip sx={{display:"flex"}} title="Enable Chat">
+                          <div style={{display:"flex"}}>
+                            <Typography sx={{marginY:"auto"}}>Enable Chat</Typography>
+                            <Switch
+                            sx={{marginY:"auto"}}
+                            checked={problem.enable_chat}
+                            onChange={() => setProblemEnableChat(problem.problemId,!problem.enable_chat)}
+                            name="loading"
+                            color="primary"
+                            />
+                          </div>
+                        </Tooltip>
+                      )}
+                      
+                    </div>
+                    <div style={{display:"flex"}}>
+                      <Button color="inherit" onClick={handleSignOut}>
+                        <Typography >Sign Out</Typography>
+                      </Button>
+                      <Tooltip sx={{display:"flex", marginY:"auto"}} title="Profile Settings">
+                        <AccountBoxIcon onClick={()=>setOpen(true)}/>
                       </Tooltip>
-                    )}
-                    
-                  </div>
-                  <div style={{display:"flex"}}>
-                    <Button color="inherit" onClick={handleSignOut}>
-                      <Typography >Sign Out</Typography>
-                    </Button>
-                    <Tooltip sx={{display:"flex", marginY:"auto"}} title="Profile Settings">
-                      <AccountBoxIcon onClick={()=>setOpen(true)}/>
-                    </Tooltip>
-                    <ChangeProfile
-                    open={open}
-                    setOpen={setOpen}
-                    ></ChangeProfile>
+                      <ChangeProfile
+                      open={open}
+                      setOpen={setOpen}
+                      ></ChangeProfile>
+                    </div>
                   </div>
                 </div>
-              </div>
-              {currentUser.userRole<3 && (
-                <>
-                  <div style={{flex:4}}>
-                    <SubmissionsProvider>
-                      <Report/>
-                    </SubmissionsProvider>
-                  </div>
-                  <div style={{flex:3}}>
-                    <Chat
-                    send={true}
-                    />
-                </div>
-                </>
-                
-              )}
-              {currentUser.userRole==3 && (
-                <>
-                  <div style={{flex:problem.enable_chat?4:7}}>
-                    <Problem/>
-                  </div>
-                  {problem.enable_chat && (
+                {currentUser.userRole<3 && (
+                  <>
+                    <div style={{flex:4}}>
+                      <SubmissionsProvider>
+                        <Report/>
+                      </SubmissionsProvider>
+                    </div>
                     <div style={{flex:3}}>
                       <Chat
                       send={true}
                       />
+                  </div>
+                  </>
+                  
+                )}
+                {currentUser.userRole==3 && (
+                  <>
+                    <div style={{flex:problem.enable_chat?4:7}}>
+                      <Problem/>
                     </div>
-                  )}
-                </> 
-              )}
-              
-            </div>
-        ):(
-            <Session/>
-        )}
+                    {problem.enable_chat && (
+                      <div style={{flex:3}}>
+                        <Chat
+                        send={true}
+                        />
+                      </div>
+                    )}
+                  </> 
+                )}
+                
+              </div>
+          ):(
+              <Session/>
+          )}
+      
+                      
+        </div>
     
-                    
-    </div>
     
   )
 })
