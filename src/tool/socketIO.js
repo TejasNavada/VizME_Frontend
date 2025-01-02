@@ -1,5 +1,5 @@
 const io = require('socket.io-client')
-export let socket = io("http://localhost:8085",{
+export let socket = io(process.env.REACT_APP_SOCKET_HOST,{
     transports: ["websocket", "polling"], // Ensure both transports are used
     reconnection: true, // Enable automatic reconnection
     reconnectionAttempts: 5, // Retry up to 5 times
